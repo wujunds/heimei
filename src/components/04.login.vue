@@ -45,12 +45,12 @@ export default {
     methods:{
          login(){
       // 设置进度条的颜色 尺寸
-      this.$Loading.config({
-        color: "yellow",
-        failedColor: "hotpink",
-        height: 10
-      });
-      this.$Loading.start();
+    //   this.$Loading.config({
+    //     color: "yellow",
+    //     failedColor: "hotpink",
+    //     height: 10
+    //   });
+    //   this.$Loading.start();
       //axios获取请求
       this.$axios.post("/account/login",{
           user_name:this.userName,
@@ -58,13 +58,25 @@ export default {
       }).then(response=>{
         //  console.log(response);
          if(response.data.status==0){
+             //用户提示
+             this.$Notice.success({
+                 title:'提示',
+                 desc:response.data.message
+             })
              //提交载荷
            this.$store.commit('changeLoginStatus',true);
            //跳回来时的页面
-           this.$router.push(this.$store.state.fromPath);
+        //    this.$router.push(this.$store.state.fromPath);
+        this.$router.go(-1)
+         }else{
+             //vuex修改
+             this.$Notice.error({
+                 title:'提示',
+                 desc:response.data.message
+             })
          }
          //关闭进度条
-         this.$Loading.finish();
+        //  this.$Loading.finish();
       }).catch(response=>{
           this.$Loading.error();//错误
       })

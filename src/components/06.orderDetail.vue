@@ -1,6 +1,6 @@
 <template>
-    <div>
-      <div>
+    
+      <div class="pay-order">
         <div class="section">
             <div class="location">
                 <span>当前位置：</span>
@@ -72,9 +72,11 @@
                             </div>
                             <div class="el-col el-col-6">
                                 <div id="container2">
-                                    <canvas width="300" height="300"></canvas>
+                                    <!-- <canvas width="300" height="300"></canvas> -->
+                                    <qrcode :value="'http://47.106.148.205:8899/site/validate/pay/alipay/'+$route.params.orderid" :options="{size:251}"></qrcode>
                                 </div>
                             </div>
+                            <input type="button" value="跳转到支付页" @click="gotoPay">
                         </div>
                     </div>
                 </div>
@@ -82,10 +84,10 @@
         </div>
     </div>
 
-
-</div>
 </template>
 <script>
+// 导入 二维码模块
+import VueQrcode from "@xkeshi/vue-qrcode";
 export default {
     name:'orderDetail',
     data:function(){
@@ -98,12 +100,47 @@ export default {
        then(response=>{
         //    console.log(response);
            this.orderInfo=response.data.message[0];
-       })
+       });
+       let timeId;
+        timeId=setInterval(()=>{
+       this.$axios.get(`/validate/order/getorder/${this.$route.params.orderid}`).
+       then(response=>{
+         console.log(11111)
+        //    console.log(response)
+        //    console.log(response.data.message[0]);
+        //    this.orderInfo=response.data.message[0];
+        if(response.data.message[0].status==2){
+            this.$Message.success("等发货把");
+             setTimeout(()=>{
+              this.$router.push('/paySuccess');
+             },500)
+            clearInterval(timeId);
+        }else{
+            //支付失败
+        }
+        })
+       },1000)
+   },
+      
+    components:{
+       //es6中的语法
+       [VueQrcode.name]:VueQrcode
+   },
+   //方法
+   methods:{
+       gotoPay(){
+           window.open(`http://47.106.148.205:8899/site/validate/pay/alipay/${this.$route.params.orderid}`);
+       }
    }
-}
+       
+   }
+
+
 </script>
 <style>
-
+   .pay-order{
+       min-height: 750px;
+   }
 </style>
 
 

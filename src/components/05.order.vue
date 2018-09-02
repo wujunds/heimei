@@ -204,7 +204,7 @@ export default {
              
             this.$axios.post(`/validate/order/setorder`,this.orderForm).
             then(response=>{
-            //   console.log(response);
+              console.log(response);
               let orderid=response.data.message.orderid;
               this.$router.push('/orderDetail/'+orderid);//直接跳转到订单详情页面
 
@@ -222,7 +222,7 @@ export default {
         //保存goodis
         this.orderForm.goodsids=this.$route.params.ids;
         this.$axios.get(`/validate/order/getgoodslist/${this.$route.params.ids}`).then(response=>{
-            console.log(response);
+            // console.log(response);
             let total=0;
             let cargoodsobj={};
             let totalCount=0;

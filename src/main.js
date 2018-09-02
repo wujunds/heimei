@@ -7,6 +7,10 @@ import shoppingCart from './components/03.shoppingCart.vue';
 import Order from './components/05.order.vue';
 import Login from './components/04.login.vue';
 import orderDetail from './components/06.orderDetail.vue';
+import PaySuccess from './components/07.paySuccess.vue';
+import VipCenter from './components/08.vipCenter.vue';
+import OrderList from './components/09.orderList.vue';
+import OrderDetailTwo from './components/10.orderDetailTwo.vue';
 // 跨域请求时 是否会携带 凭证(cookie)
 axios.defaults.withCredentials = true;
 import moment from "moment";//时间格式
@@ -18,9 +22,13 @@ Vue.use(iView);
 //放大镜
 import ProductZoomer from 'vue-product-zoomer';
 Vue.use(ProductZoomer);
-//注册
-Vue.filter('filterDate', function(val){
-  return moment(val).format("YYYY年MM月DD日");
+//注册 时间格式
+Vue.filter('filterDate', function(val,formatStr){
+  if(formatStr!=undefined){
+    return moment(val).format(formatStr);
+  }else{
+    return moment(val).format("YYYY年MM月DD日");
+  }
 })
 //引入vuex
 import Vuex from 'vuex'
@@ -31,7 +39,7 @@ const store = new Vuex.Store({
   state: {
   cartData:JSON.parse(window.localStorage.getItem('goodKey'))||{},
   islogin:false,
-  fromPath:''
+  // fromPath:''
   },
   mutations: {
     // increment (state,n) {
@@ -61,9 +69,9 @@ const store = new Vuex.Store({
     changeLoginStatus(state,islogin){
         state.islogin=islogin;
     },
-    saveFromPath(state,fromPath){
-      state.fromPath=fromPath;
-    }
+    // saveFromPath(state,fromPath){
+    //   state.fromPath=fromPath;
+    // }
   },
    //getters 
    getters:{
@@ -125,11 +133,51 @@ let routes=[
   },
   {
     path:'/order/:ids',
-    component:Order
+    component:Order,
+    // 路由元信息 可以随意加 
+    meta: {
+      changeLoginStatus: true
+      // panduan:true     
+    }
   },
   {
     path:'/orderDetail/:orderid',
-    component:orderDetail
+    component:orderDetail,
+    meta: {
+      changeLoginStatus: true
+      // panduan:true     
+    }
+  },
+  {
+    path:'/paySuccess',
+    component:PaySuccess,
+    meta: {
+      changeLoginStatus: true
+      // panduan:true     
+    }
+  },
+  {
+    path:'/vipCenter',
+    component:VipCenter,
+    meta: {
+      changeLoginStatus: true
+      // panduan:true     
+    }
+  },
+  {
+    path:'/orderList',
+    component:OrderList,
+    meta: {
+      changeLoginStatus: true
+      // panduan:true     
+    }
+  },
+  {
+    path:'/orderDetailTwo/:id',
+    component:OrderDetailTwo,
+    meta:{
+      changeLoginStatus:true
+    }
   }
 ]
 
@@ -139,7 +187,7 @@ let router=new VueRouter({
 })
 //注册一个全局前置守卫
 router.beforeEach((to, from, next) => {
-      store.commit('saveFromPath',from.path)
+      // store.commit('saveFromPath',from.path)
      //检测是否登录
      if(to.path.indexOf('/order/')!=-1){
           axios.get('account/islogin').then(response=>{
